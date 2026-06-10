@@ -1,0 +1,513 @@
+:root {
+  --primary: #ffffff;
+  --primary-hover: #e2e8f0;
+  --secondary: #94a3b8;
+  --success: #10b981;
+  --bg-main: #000000;
+  --bg-card: rgba(20, 20, 20, 0.8);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-light: rgba(255, 255, 255, 0.1);
+  --glow-primary: 0 4px 14px 0 rgba(0, 0, 0, 0.5);
+  --glow-secondary: none;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+body {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Remove CSS animated gradients to let 3D Canvas shine decently */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: 
+    linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: -3; /* place behind the 3D canvas */
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+h1, h2, h3, h4, h5, h6, .brand-font {
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Glass & Neon Panels */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px -1px rgba(0,0,0,0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel::before {
+  display: none; /* removed neon top border */
+}
+
+/* Cyber Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: var(--text-main);
+  color: var(--bg-main);
+  border: 1px solid var(--text-main);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  color: var(--bg-main);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+.btn-glass {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+/* App layout */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(5, 5, 5, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--primary);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Hero Section */
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 75vh;
+  gap: 4rem;
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero-text h1 {
+  font-size: 5rem;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  color: #fff;
+  letter-spacing: -1px;
+}
+
+.hero-text p {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.hero-3d-container {
+  flex: 1;
+  height: 550px;
+  position: relative;
+  background: transparent;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-3d-container::after {
+  display: none; /* removed neon border */
+}
+
+/* Product Grid */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.product-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.product-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--primary);
+  box-shadow: var(--glow-primary), inset 0 0 15px rgba(0,240,255,0.1);
+  z-index: 2;
+}
+
+.product-image-container {
+  height: 220px;
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.product-image-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 240, 255, 0.05) 2px,
+    rgba(0, 240, 255, 0.05) 4px
+  );
+  pointer-events: none;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.product-info h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: normal;
+  color: #fff;
+}
+
+.product-price {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 2px;
+  font-size: 0.7rem;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(0, 240, 255, 0.1);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+/* Inputs */
+input[type="text"] {
+  background: rgba(0,0,0,0.5) !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--primary) !important;
+  font-family: 'Space Grotesk', sans-serif;
+  transition: all 0.3s;
+}
+
+input[type="text"]:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+input[type="text"]::placeholder {
+  color: rgba(0, 240, 255, 0.3) !important;
+}
+
+/* Light Mode Overrides */
+body.light-mode {
+  --primary: #2874f0; /* Flipkart Blue */
+  --primary-hover: #1e5bbd;
+  --secondary: #ff9000; /* Flipkart Orange/Yellow */
+  --success: #388e3c; /* Flipkart Green */
+  --bg-main: #f1f3f6; /* Flipkart Light Gray Background */
+  --bg-card: #ffffff; /* Solid White Cards */
+  --text-main: #212121;
+  --text-muted: #878787;
+  --border-light: #e0e0e0;
+  --glow-primary: 0 2px 4px 0 rgba(0,0,0,.08);
+  --glow-secondary: 0 2px 4px 0 rgba(0,0,0,.08);
+  
+  background-color: var(--bg-main);
+  background-image: none;
+}
+
+body.light-mode::before {
+  display: none;
+}
+
+body.light-mode h1, body.light-mode h2, body.light-mode h3, body.light-mode h4, body.light-mode h5, body.light-mode h6, body.light-mode .brand-font {
+  font-family: 'Roboto', system-ui, -apple-system, sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+  text-shadow: none;
+  color: var(--text-main);
+}
+
+body.light-mode .hero-text h1 {
+  font-weight: 700;
+  color: #212121;
+}
+
+body.light-mode .glass-panel {
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,.15);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: 4px;
+  border: none;
+}
+
+body.light-mode .glass-panel::before {
+  display: none;
+}
+
+body.light-mode .navbar {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+body.light-mode .navbar .brand-font {
+  color: #000 !important;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+body.light-mode .nav-links a {
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  color: #4b5563;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+body.light-mode .nav-links a.active, body.light-mode .nav-links a:hover {
+  color: #000;
+  text-shadow: none;
+}
+
+body.light-mode .btn {
+  font-family: 'Roboto', sans-serif;
+  text-transform: uppercase;
+  border-radius: 2px;
+  font-weight: 500;
+}
+
+body.light-mode .btn-primary {
+  background: #ff9f00; /* Flipkart Add to Cart button color */
+  color: #fff;
+  border: none;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,.2);
+}
+
+body.light-mode .btn-primary:hover {
+  background: #f39800;
+  color: #fff;
+  transform: none;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
+}
+
+body.light-mode .btn-glass {
+  background: #ffffff;
+  color: #2874f0;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+}
+
+body.light-mode .btn-glass:hover {
+  background: #f9f9f9;
+  color: #2874f0;
+  transform: none;
+}
+
+body.light-mode .hero-3d-container {
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,.15);
+  border-radius: 4px;
+  background: #fff;
+  border: none;
+}
+
+body.light-mode .hero-3d-container::after {
+  display: none;
+}
+
+body.light-mode .product-card {
+  border-radius: 4px;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,.15);
+  border: none;
+  background: #fff;
+}
+
+body.light-mode .product-card:hover {
+  transform: none;
+  box-shadow: 0 3px 16px 0 rgba(0,0,0,.11);
+}
+
+body.light-mode .product-image-container {
+  background: #fff;
+}
+
+body.light-mode .product-image-container::before {
+  display: none;
+}
+
+body.light-mode .badge {
+  background: #388e3c;
+  color: #fff;
+  border: none;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+}
+
+body.light-mode input[type="text"] {
+  background: #ffffff !important;
+  color: var(--text-main) !important;
+  font-family: 'Inter', sans-serif;
+}
+
+body.light-mode input[type="text"]:focus {
+  border-color: var(--success) !important;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+body.light-mode input[type="text"]::placeholder {
+  color: var(--text-muted) !important;
+}
+
+body.light-mode .nav-links a {
+  font-family: 'Inter', sans-serif;
+  text-transform: none;
+}
+
+body.light-mode .nav-links a.active, body.light-mode .nav-links a:hover {
+  color: var(--success);
+  text-shadow: none;
+}
+
+body.light-mode .product-price {
+  font-family: 'Roboto', sans-serif;
+  color: #212121;
+  text-shadow: none;
+  font-weight: 500;
+}
+
+body.light-mode .nav-indicator {
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
