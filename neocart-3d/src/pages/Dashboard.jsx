@@ -1,11 +1,29 @@
 import React, { useState } from 'react';
-import { Activity, Package, Clock, DollarSign, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { Activity, Package, Clock, DollarSign, ArrowUpRight, ShieldCheck, Sliders, AlertTriangle, TrendingUp, Wallet, Bell, Trash2, PlusCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useStore } from '../store';
 
-const TABS = ['Overview', 'My Rentals', 'Admin Analytics'];
+const TABS = ['Overview', 'Budget Planner', 'My Rentals', 'Admin Analytics'];
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('Overview');
+  const { 
+    budgetLimit, 
+    totalExpenses, 
+    expensesHistory, 
+    alertAt80, 
+    alertAt100, 
+    setBudgetLimit, 
+    setAlertAt80, 
+    setAlertAt100, 
+    addExpense, 
+    removeExpense 
+  } = useStore();
+
+  const [newLimit, setNewLimit] = useState(budgetLimit.toString());
+  const [customExpenseName, setCustomExpenseName] = useState('');
+  const [customExpenseAmount, setCustomExpenseAmount] = useState('');
+  const [customExpenseType, setCustomExpenseType] = useState('Purchase');
 
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '4rem' }}>
@@ -63,7 +81,7 @@ export default function Dashboard() {
               <h3 style={{ color: 'var(--text-muted)' }}>Total Spent</h3>
               <DollarSign color="#16a34a" />
             </div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>₹4,25,000</div>
+            <div style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>₹{totalExpenses.toLocaleString('en-IN')}</div>
             <div style={{ marginTop: '0.5rem', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.875rem' }}>
               <ArrowUpRight size={16} /> +12% from last month
             </div>
@@ -86,6 +104,327 @@ export default function Dashboard() {
             <div style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>₹1,84,000</div>
             <div style={{ marginTop: '0.5rem', color: '#8b5cf6', fontSize: '0.875rem' }}>
               AI insights optimizing your spend
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'Budget Planner' && (
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', marginTop: '1rem' }}>
+          {/* Left Column: Progress & Expense Log */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {/* Progress & Insights */}
+            <div className="glass-panel" style={{ padding: '2rem' }}>
+              <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Wallet color="var(--primary)" size={20} /> Budget Utilization
+              </h3>
+              
+              {/* Stat Row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                <div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Budget Limit</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', fontFamily: 'Orbitron' }}>
+                    ₹{budgetLimit.toLocaleString('en-IN')}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Total Spent</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', fontFamily: 'Orbitron', color: totalExpenses > budgetLimit ? '#ef4444' : 'var(--text-main)' }}>
+                    ₹{totalExpenses.toLocaleString('en-IN')}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Remaining</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', fontFamily: 'Orbitron', color: budgetLimit - totalExpenses < 0 ? '#ef4444' : 'var(--success)' }}>
+                    {budgetLimit - totalExpenses < 0 ? '-' : ''}₹{Math.abs(budgetLimit - totalExpenses).toLocaleString('en-IN')}
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              {(() => {
+                const pct = (totalExpenses / budgetLimit) * 100;
+                const progressPct = Math.min(100, pct);
+                const isOver = totalExpenses > budgetLimit;
+                return (
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                      <span>Utilization Rate</span>
+                      <span style={{ color: isOver ? '#ef4444' : 'var(--primary)' }}>{pct.toFixed(1)}%</span>
+                    </div>
+                    <div style={{ height: '14px', background: 'rgba(255,255,255,0.1)', borderRadius: '7px', overflow: 'hidden', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.2)' }}>
+                      <div 
+                        style={{ 
+                          height: '100%', 
+                          width: `${progressPct}%`, 
+                          background: isOver 
+                            ? 'linear-gradient(to right, #f59e0b, #ef4444)' 
+                            : 'linear-gradient(to right, #10b981, #3b82f6)', 
+                          borderRadius: '7px',
+                          boxShadow: isOver ? '0 0 8px #ef4444' : 'none',
+                          transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                        }} 
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* AI Insight Box */}
+              <div 
+                style={{ 
+                  padding: '1.25rem', 
+                  background: 'rgba(255,255,255,0.03)', 
+                  borderLeft: `4px solid ${totalExpenses > budgetLimit ? '#ef4444' : totalExpenses >= budgetLimit * 0.8 ? '#f59e0b' : 'var(--success)'}`,
+                  borderRadius: '0 8px 8px 0'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                  <TrendingUp size={16} color={totalExpenses > budgetLimit ? '#ef4444' : totalExpenses >= budgetLimit * 0.8 ? '#f59e0b' : 'var(--success)'} />
+                  <span>AI BUDGET RECOMMENDATION</span>
+                </div>
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
+                  {totalExpenses > budgetLimit ? (
+                    <>
+                      You have breached your set budget by <strong>₹{(totalExpenses - budgetLimit).toLocaleString('en-IN')}</strong>. Consider cancelling or returning active rental devices early to lower expenses, or choose split-payment options for shared orders to reduce your direct billing.
+                    </>
+                  ) : totalExpenses >= budgetLimit * 0.8 ? (
+                    <>
+                      You have utilized over <strong>80%</strong> of your total budget. We recommend opting for rentals rather than buying high-ticket items. Renting the Apple Vision Pro instead of purchasing outright saved you ₹3,20,000 this month!
+                    </>
+                  ) : (
+                    <>
+                      Your expenses are well within limits. You have <strong>₹{(budgetLimit - totalExpenses).toLocaleString('en-IN')}</strong> of headroom remaining. Consider trying out new VR headsets or hoverboards in our <strong>Shop & Rent</strong> catalog.
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* Expense Log */}
+            <div className="glass-panel" style={{ padding: '2rem' }}>
+              <h3 style={{ marginBottom: '1.5rem' }}>Expense History</h3>
+              
+              {/* Expense Table */}
+              <div style={{ overflowX: 'auto', marginBottom: '2rem' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '500px' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--border-light)', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+                      <th style={{ padding: '0.75rem 1rem' }}>Description</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Type</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Date</th>
+                      <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Amount</th>
+                      <th style={{ padding: '0.75rem 1rem', width: '50px' }}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {expensesHistory.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                          No expenses tracked yet. Start shopping!
+                        </td>
+                      </tr>
+                    ) : (
+                      expensesHistory.map((item) => (
+                        <tr key={item.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', fontSize: '0.95rem' }}>
+                          <td style={{ padding: '1rem', fontWeight: 500 }}>{item.name}</td>
+                          <td style={{ padding: '1rem' }}>
+                            <span 
+                              style={{ 
+                                padding: '0.2rem 0.5rem', 
+                                background: item.type === 'Rental' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+                                border: `1px solid ${item.type === 'Rental' ? 'var(--success)' : '#3b82f6'}`,
+                                color: item.type === 'Rental' ? 'var(--success)' : '#3b82f6',
+                                borderRadius: '4px',
+                                fontSize: '0.75rem',
+                                fontWeight: 'bold'
+                              }}
+                            >
+                              {item.type}
+                            </span>
+                          </td>
+                          <td style={{ padding: '1rem', color: 'var(--text-muted)' }}>{item.date}</td>
+                          <td style={{ padding: '1rem', textAlign: 'right', fontWeight: 'bold', fontFamily: 'Orbitron' }}>
+                            ₹{item.amount.toLocaleString('en-IN')}
+                          </td>
+                          <td style={{ padding: '1rem', textAlign: 'center' }}>
+                            <button 
+                              onClick={() => {
+                                removeExpense(item.id);
+                                useStore.getState().setToast("Expense deleted");
+                              }}
+                              style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Add Custom Expense Form */}
+              <h4 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-muted)' }}>Log External Expense</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 1.2fr auto', gap: '1rem', alignItems: 'end' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.25rem' }}>Item Name / Description</label>
+                  <input 
+                    type="text" 
+                    value={customExpenseName}
+                    onChange={(e) => setCustomExpenseName(e.target.value)}
+                    placeholder="e.g. VR Controller Accessories"
+                    style={{ width: '100%', padding: '0.65rem', border: '1px solid var(--border-light)', borderRadius: '4px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.25rem' }}>Amount (₹)</label>
+                  <input 
+                    type="number" 
+                    value={customExpenseAmount}
+                    onChange={(e) => setCustomExpenseAmount(e.target.value)}
+                    placeholder="e.g. 1500"
+                    style={{ 
+                      width: '100%', 
+                      padding: '0.65rem', 
+                      background: 'rgba(0,0,0,0.5)', 
+                      border: '1px solid var(--border-light)', 
+                      color: 'var(--text-main)', 
+                      borderRadius: '4px',
+                      fontFamily: 'Space Grotesk'
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.25rem' }}>Category</label>
+                  <select 
+                    value={customExpenseType}
+                    onChange={(e) => setCustomExpenseType(e.target.value)}
+                    style={{ 
+                      width: '100%', 
+                      padding: '0.65rem', 
+                      background: 'rgba(0,0,0,0.5)', 
+                      border: '1px solid var(--border-light)', 
+                      color: 'var(--text-main)', 
+                      borderRadius: '4px',
+                      fontFamily: 'Space Grotesk',
+                      outline: 'none',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="Purchase" style={{ background: '#000' }}>Purchase</option>
+                    <option value="Rental" style={{ background: '#000' }}>Rental</option>
+                  </select>
+                </div>
+                <button 
+                  className="btn btn-primary"
+                  style={{ padding: '0.65rem 1.2rem', display: 'flex', gap: '0.25rem', height: '38px', borderRadius: '4px' }}
+                  onClick={() => {
+                    if (!customExpenseName.trim() || !customExpenseAmount.trim()) {
+                      useStore.getState().setToast("Please fill in name and amount");
+                      return;
+                    }
+                    addExpense(customExpenseName, Number(customExpenseAmount), customExpenseType);
+                    useStore.getState().setToast(`Added expense: ${customExpenseName}`);
+                    setCustomExpenseName('');
+                    setCustomExpenseAmount('');
+                  }}
+                >
+                  <PlusCircle size={16} /> Add
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Settings & Limits */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {/* Configure Budget */}
+            <div className="glass-panel" style={{ padding: '2rem' }}>
+              <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Sliders size={20} color="var(--primary)" /> Budget Settings
+              </h3>
+              
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ fontSize: '0.875rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>
+                  Set Budget Limit (₹)
+                </label>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input 
+                    type="number" 
+                    value={newLimit}
+                    onChange={(e) => setNewLimit(e.target.value)}
+                    style={{ 
+                      flex: 1, 
+                      padding: '0.65rem', 
+                      background: 'rgba(0,0,0,0.5)', 
+                      border: '1px solid var(--border-light)', 
+                      color: 'var(--text-main)', 
+                      borderRadius: '4px',
+                      fontFamily: 'Space Grotesk'
+                    }}
+                  />
+                  <button 
+                    className="btn btn-primary"
+                    style={{ padding: '0.65rem 1rem', borderRadius: '4px' }}
+                    onClick={() => {
+                      if (!newLimit || isNaN(newLimit) || Number(newLimit) <= 0) {
+                        useStore.getState().setToast("Enter a valid positive number");
+                        return;
+                      }
+                      setBudgetLimit(Number(newLimit));
+                      useStore.getState().setToast(`Budget limit updated to ₹${Number(newLimit).toLocaleString()}`);
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              {/* Alert Configuration */}
+              <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '1.5rem' }}>
+                <h4 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Bell size={16} /> Budget Intimations
+                </h4>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', cursor: 'pointer', fontSize: '0.9rem', lineHeight: '1.4' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={alertAt80} 
+                      onChange={(e) => setAlertAt80(e.target.checked)}
+                      style={{ width: '1.1rem', height: '1.1rem', marginTop: '0.15rem', accentColor: 'var(--primary)' }}
+                    />
+                    <div>
+                      <div>Alert at 80% Capacity</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Send warning notification when spending crosses 80% of budget.</div>
+                    </div>
+                  </label>
+
+                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', cursor: 'pointer', fontSize: '0.9rem', lineHeight: '1.4' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={alertAt100} 
+                      onChange={(e) => setAlertAt100(e.target.checked)}
+                      style={{ width: '1.1rem', height: '1.1rem', marginTop: '0.15rem', accentColor: 'var(--primary)' }}
+                    />
+                    <div>
+                      <div>Alert at 100% Capacity</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Send critical alert when spending exceeds 100% of budget.</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Smart renting advice */}
+            <div className="glass-panel" style={{ padding: '1.5rem', border: '1px solid rgba(16, 185, 129, 0.2)', background: 'rgba(16, 185, 129, 0.02)' }}>
+              <h4 style={{ color: 'var(--success)', fontSize: '0.9rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                🌱 RENT & STAY GREEN
+              </h4>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
+                Our 3D rental system allows you to use premium devices on demand. Renting products prevents electronic waste, keeps your carbon footprint low, and protects your capital/budget by up to <strong>85% monthly</strong>.
+              </p>
             </div>
           </div>
         </div>

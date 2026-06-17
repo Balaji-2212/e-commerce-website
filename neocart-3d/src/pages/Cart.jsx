@@ -4,7 +4,7 @@ import { Trash2, Users, CreditCard, Share2, MapPin, ArrowRight } from 'lucide-re
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Cart() {
-  const { cart, removeFromCart, collaborators, sharedCartId, emptyCart } = useStore();
+  const { cart, removeFromCart, collaborators, sharedCartId, emptyCart, budgetLimit, totalExpenses, addExpense } = useStore();
   const [splitPayment, setSplitPayment] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -45,6 +45,18 @@ export default function Cart() {
 
       billText += "\nThank you for shopping at Venture!";
       
+      // Add items to expenses history
+      cart.forEach((item) => {
+        const itemCost = item.isRental ? item.rentPrice * item.duration : item.price;
+        const itemTotalCost = itemCost * 1.08;
+        const actualCost = splitPayment ? (itemTotalCost / 3) : itemTotalCost;
+        addExpense(
+          `${item.name} (${item.isRental ? 'Rental' : 'Purchase'})${splitPayment ? ' - Shared' : ''}`,
+          Math.round(actualCost),
+          item.isRental ? 'Rental' : 'Purchase'
+        );
+      });
+
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(billText)}`;
       window.open(whatsappUrl, '_blank');
       
@@ -319,6 +331,78 @@ export default function Cart() {
             </div>
           </motion.div>
         )}
+
+        {/* Smart Budget Tracker Indicator */}
+        {cart.length > 0 && (() => {
+          const currentOrderShare = splitPayment ? total / 3 : total;
+          const projectedTotal = totalExpenses + currentOrderShare;
+          const isExceeded = projectedTotal > budgetLimit;
+          const percentUsed = Math.min(100, (projectedTotal / budgetLimit) * 100);
+          return (
+            <div 
+              className="glass-panel" 
+              style={{ 
+                marginTop: '1.5rem', 
+                padding: '1.25rem', 
+                border: isExceeded ? '1px solid #ef4444' : '1px solid var(--border-light)', 
+                background: isExceeded ? 'rgba(239, 68, 68, 0.05)' : 'rgba(0,0,0,0.05)',
+                borderRadius: '8px' 
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 'bold', letterSpacing: '0.5px', color: isExceeded ? '#ef4444' : 'var(--text-muted)' }}>
+                  {isExceeded ? '⚠️ BUDGET BREACH WARNING' : '💳 SMART BUDGET STATUS'}
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  Limit: ₹{budgetLimit.toLocaleString('en-IN')}
+                </span>
+              </div>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                <span>Spent so far:</span>
+                <span style={{ fontWeight: '600' }}>₹{totalExpenses.toLocaleString('en-IN')}</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                <span>This order:</span>
+                <span style={{ fontWeight: '600', color: splitPayment ? 'var(--success)' : 'inherit' }}>
+                  ₹{currentOrderShare.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  {splitPayment && ' (1/3 share)'}
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1rem', fontWeight: 'bold', margin: '0.5rem 0', paddingTop: '0.5rem', borderTop: '1px dashed var(--border-light)' }}>
+                <span>Projected Total:</span>
+                <span style={{ color: isExceeded ? '#ef4444' : 'var(--success)' }}>
+                  ₹{projectedTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                </span>
+              </div>
+
+              {/* Progress Bar */}
+              <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden', marginTop: '0.75rem', marginBottom: '0.75rem' }}>
+                <div 
+                  style={{ 
+                    height: '100%', 
+                    width: `${percentUsed}%`, 
+                    background: isExceeded ? 'linear-gradient(to right, #f59e0b, #ef4444)' : 'linear-gradient(to right, #10b981, #3b82f6)', 
+                    borderRadius: '4px',
+                    transition: 'width 0.4s ease'
+                  }} 
+                />
+              </div>
+
+              {isExceeded ? (
+                <p style={{ fontSize: '0.75rem', color: '#ef4444', lineHeight: '1.4' }}>
+                  This purchase will exceed your set budget by <strong>₹{(projectedTotal - budgetLimit).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</strong>. Consider renting instead of buying, or remove items to stay within limit.
+                </p>
+              ) : (
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                  You are safe! You will have <strong>₹{(budgetLimit - projectedTotal).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</strong> remaining in your budget after this order.
+                </p>
+              )}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
