@@ -1,0 +1,163 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Apple Vision Pro",
+      "price": 349900,
+      "rentPrice": 15000,
+      "rating": 4.8,
+      "category": "Electronics",
+      "color": "#6366f1",
+      "image": "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": 2,
+      "name": "Segway Ninebot S",
+      "price": 45000,
+      "rentPrice": 4500,
+      "rating": 4.5,
+      "category": "Mobility",
+      "color": "#10b981",
+      "image": "https://images.unsplash.com/photo-1593006509935-77a8342416b7?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": 3,
+      "name": "Apple AirPods Max",
+      "price": 59900,
+      "rentPrice": 5000,
+      "rating": 4.9,
+      "category": "Audio",
+      "color": "#f59e0b",
+      "image": "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": 4,
+      "name": "Samsung Freestyle Projector",
+      "price": 55000,
+      "rentPrice": 4000,
+      "rating": 4.2,
+      "category": "Electronics",
+      "color": "#ec4899",
+      "image": "https://images.unsplash.com/photo-1585862705497-b952f4477df5?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": 5,
+      "name": "bHaptics TactSuit X40",
+      "price": 49999,
+      "rentPrice": 4000,
+      "rating": 4.7,
+      "category": "Gaming",
+      "color": "#3b82f6",
+      "image": "https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": 6,
+      "name": "DJI Mini 4 Pro",
+      "price": 79999,
+      "rentPrice": 7000,
+      "rating": 4.6,
+      "category": "Cameras",
+      "color": "#8b5cf6",
+      "image": "https://images.unsplash.com/photo-1579829366248-204fe8413f31?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": 7,
+      "name": "Sony PlayStation 5",
+      "price": 54990,
+      "rentPrice": 3500,
+      "rating": 4.9,
+      "category": "Gaming",
+      "color": "#0ea5e9",
+      "image": "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": 8,
+      "name": "Apple iPhone 15 Pro Max",
+      "price": 159900,
+      "rentPrice": 8000,
+      "rating": 4.8,
+      "category": "Electronics",
+      "color": "#8b5cf6",
+      "image": "https://images.unsplash.com/photo-1696446701796-da61225697cc?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": 9,
+      "name": "Dyson V15 Detect",
+      "price": 65900,
+      "rentPrice": 4500,
+      "rating": 4.7,
+      "category": "Smart Home",
+      "color": "#f43f5e",
+      "image": "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": 10,
+      "name": "LG C3 65\" OLED TV",
+      "price": 169990,
+      "rentPrice": 12000,
+      "rating": 4.9,
+      "category": "Electronics",
+      "color": "#64748b",
+      "image": "https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": 11,
+      "name": "Apple Watch Ultra 2",
+      "price": 89900,
+      "rentPrice": 5000,
+      "rating": 4.8,
+      "category": "Wearables",
+      "color": "#fb923c",
+      "image": "https://images.unsplash.com/photo-1617043786394-f977fa12eddf?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": 12,
+      "name": "Nintendo Switch OLED",
+      "price": 34990,
+      "rentPrice": 2000,
+      "rating": 4.8,
+      "category": "Gaming",
+      "color": "#ef4444",
+      "image": "https://images.unsplash.com/photo-1612036782180-6f0b6ce846ce?auto=format&fit=crop&q=80&w=400"
+    }
+  ],
+  "expenses": [
+    {
+      "id": "exp-1",
+      "name": "Apple Vision Pro (Rental)",
+      "amount": 180000,
+      "type": "Rental",
+      "date": "2026-06-01"
+    },
+    {
+      "id": "exp-2",
+      "name": "Custom Drone Alpha (Buy)",
+      "amount": 241000,
+      "type": "Purchase",
+      "date": "2026-06-05"
+    },
+    {
+      "id": "exp-3",
+      "name": "Segway Ninebot S (Rental)",
+      "amount": 4000,
+      "type": "Rental",
+      "date": "2026-06-10"
+    }
+  ],
+  "budget": {
+    "limit": 500000,
+    "alertAt80": true,
+    "alertAt100": true
+  },
+  "users": [
+    {
+      "id": "usr-we4q4ljsi",
+      "name": "Neo Operator",
+      "email": "neo@venture.net",
+      "password": "ComplexPassword123!",
+      "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      "tier": "Pro Tier",
+      "createdAt": "2026-06-19T09:09:04.264Z"
+    }
+  ]
+}

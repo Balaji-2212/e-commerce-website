@@ -34,12 +34,11 @@ export default function Shop() {
   const [filter, setFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [hoveredId, setHoveredId] = useState(null);
-  const addToCart = useStore((state) => state.addToCart);
-  const toggleWishlist = useStore((state) => state.toggleWishlist);
-  const wishlist = useStore((state) => state.wishlist);
+  
+  const { products, addToCart, toggleWishlist, wishlist } = useStore();
 
-  const categories = ['All', ...new Set(MOCK_PRODUCTS.map(p => p.category))];
-  const filteredProducts = MOCK_PRODUCTS.filter(p => {
+  const categories = ['All', ...new Set(products.map(p => p.category))];
+  const filteredProducts = products.filter(p => {
     const matchesCategory = filter === 'All' || p.category === filter;
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;

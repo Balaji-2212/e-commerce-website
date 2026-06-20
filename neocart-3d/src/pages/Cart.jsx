@@ -4,7 +4,7 @@ import { Trash2, Users, CreditCard, Share2, MapPin, ArrowRight } from 'lucide-re
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Cart() {
-  const { cart, removeFromCart, collaborators, sharedCartId, emptyCart, budgetLimit, totalExpenses, addExpense } = useStore();
+  const { cart, removeFromCart, collaborators, sharedCartId, emptyCart, budgetLimit, totalExpenses, addExpense, addCollaborator } = useStore();
   const [splitPayment, setSplitPayment] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -121,8 +121,37 @@ export default function Cart() {
                       disabled={!manualInvite.trim()}
                       onClick={() => {
                         setShowInviteList(false);
-                        useStore.getState().setToast(`Invitation sent to ${manualInvite}!`);
+                        const inviteTarget = manualInvite.trim();
                         setManualInvite('');
+                        
+                        // Compose Invite Text
+                        const inviteText = `Hey! I'm shopping on Venture. Join my collaborative cart room 'cart-x789' to shop together! Open http://localhost:5173/ to start!`;
+                        
+                        // Check if email or phone
+                        if (inviteTarget.includes('@')) {
+                          // Trigger email mailto
+                          const subject = encodeURIComponent("Join my collaborative shopping room on Venture");
+                          const body = encodeURIComponent(inviteText);
+                          window.location.href = `mailto:${inviteTarget}?subject=${subject}&body=${body}`;
+                          useStore.getState().setToast(`Email client opened to invite ${inviteTarget}!`);
+                        } else {
+                          // Trigger WhatsApp message link
+                          const cleanDigits = inviteTarget.replace(/\D/g, '');
+                          const whatsappUrl = cleanDigits.length >= 10 
+                            ? `https://wa.me/${cleanDigits}?text=${encodeURIComponent(inviteText)}` 
+                            : `https://wa.me/?text=${encodeURIComponent(inviteText)}`;
+                          window.open(whatsappUrl, '_blank');
+                          useStore.getState().setToast(`WhatsApp opened to invite ${inviteTarget}!`);
+                        }
+                        
+                        // Simulate the collaborator joining the local session
+                        const friendlyName = inviteTarget.includes('@') 
+                          ? inviteTarget.split('@')[0] 
+                          : inviteTarget;
+                        setTimeout(() => {
+                          addCollaborator(friendlyName);
+                          useStore.getState().setToast(`👥 ${friendlyName} joined the shopping session!`);
+                        }, 2500);
                       }}
                     >
                       Send
@@ -137,6 +166,11 @@ export default function Cart() {
                         onClick={() => {
                           setShowInviteList(false);
                           useStore.getState().setToast(`Invitation sent to ${contact}!`);
+                          // Simulate real-time collaborator joining after 2.5 seconds
+                          setTimeout(() => {
+                            addCollaborator(contact);
+                            useStore.getState().setToast(`👥 ${contact} joined the shopping session!`);
+                          }, 2500);
                         }}
                         style={{
                           background: 'rgba(255,255,255,0.05)',

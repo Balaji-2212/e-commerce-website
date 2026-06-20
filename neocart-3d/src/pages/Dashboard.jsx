@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Activity, Package, Clock, DollarSign, ArrowUpRight, ShieldCheck, Sliders, AlertTriangle, TrendingUp, Wallet, Bell, Trash2, PlusCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Activity, Package, Clock, DollarSign, ArrowUpRight, ShieldCheck, Sliders, AlertTriangle, TrendingUp, Wallet, Bell, Trash2, PlusCircle, Lock, ShieldAlert } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useStore } from '../store';
 
@@ -17,7 +18,10 @@ export default function Dashboard() {
     setAlertAt80, 
     setAlertAt100, 
     addExpense, 
-    removeExpense 
+    removeExpense,
+    user,
+    logoutUser,
+    theme
   } = useStore();
 
   const [newLimit, setNewLimit] = useState(budgetLimit.toString());
@@ -25,25 +29,117 @@ export default function Dashboard() {
   const [customExpenseAmount, setCustomExpenseAmount] = useState('');
   const [customExpenseType, setCustomExpenseType] = useState('Purchase');
 
+  if (!user) {
+    return (
+      <div 
+        className="animate-fade-in" 
+        style={{ 
+          minHeight: '70vh', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '2rem 1rem',
+          position: 'relative'
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="glass-panel"
+          style={{
+            maxWidth: '500px',
+            width: '100%',
+            padding: '3rem 2rem',
+            border: theme === 'dark' ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid #e0e0e0',
+            boxShadow: theme === 'dark' ? '0 10px 30px rgba(239, 68, 68, 0.1)' : '0 10px 25px rgba(0,0,0,0.05)',
+            background: theme === 'dark' ? 'rgba(10, 5, 5, 0.85)' : '#ffffff',
+            borderRadius: '12px'
+          }}
+        >
+          <div style={{
+            display: 'inline-flex',
+            padding: '1rem',
+            borderRadius: '50%',
+            background: theme === 'dark' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            marginBottom: '1.5rem'
+          }}>
+            <Lock size={40} color="#ef4444" />
+          </div>
+          
+          <h2 style={{ 
+            fontSize: '1.75rem', 
+            fontFamily: theme === 'dark' ? 'Orbitron' : 'sans-serif', 
+            color: '#ef4444', 
+            marginBottom: '1rem',
+            letterSpacing: '1px'
+          }}>
+            ACCESS_RESTRICTED
+          </h2>
+          
+          <p style={{ 
+            color: 'var(--text-muted)', 
+            fontFamily: 'Space Grotesk', 
+            fontSize: '0.95rem',
+            lineHeight: '1.6',
+            marginBottom: '2rem'
+          }}>
+            This terminal node requires a verified secure link signature. Please authorize your credentials to synchronize budget metrics, rental products, and live global traffic dashboards.
+          </p>
+
+          <Link 
+            to="/login" 
+            className="btn btn-primary"
+            style={{ 
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.85rem 2rem',
+              fontSize: '0.95rem',
+              borderRadius: '6px',
+              textDecoration: 'none',
+              background: theme === 'dark' ? '#ef4444' : '#ef4444',
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            <ShieldAlert size={18} />
+            <span>ESTABLISH SECURE LINK</span>
+          </Link>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '4rem' }}>
       <h1 style={{ fontSize: '2.5rem', marginBottom: '2rem', fontFamily: 'Orbitron', textTransform: 'uppercase' }}>My Profile</h1>
 
       <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '2rem', padding: '2rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
         <div style={{ width: '120px', height: '120px', borderRadius: '50%', overflow: 'hidden', border: '3px solid var(--border-light)', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', flexShrink: 0 }}>
-          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=250&q=80" alt="Alex Mercer" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={user.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=250&q=80"} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div style={{ flex: 1 }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '0.25rem', fontFamily: 'Orbitron', textTransform: 'uppercase', letterSpacing: '1px' }}>Alex Mercer</h2>
-          <div style={{ color: 'var(--text-muted)', marginBottom: '1rem', fontFamily: 'Space Grotesk' }}>alex.mercer@venture.tech</div>
+          <h2 style={{ fontSize: '2rem', marginBottom: '0.25rem', fontFamily: 'Orbitron', textTransform: 'uppercase', letterSpacing: '1px' }}>{user.name}</h2>
+          <div style={{ color: 'var(--text-muted)', marginBottom: '1rem', fontFamily: 'Space Grotesk' }}>{user.email}</div>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <span style={{ padding: '0.25rem 0.75rem', background: 'rgba(255, 255, 255, 0.1)', border: '1px solid var(--border-light)', color: 'var(--text-main)', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>Pro Tier</span>
+            <span style={{ padding: '0.25rem 0.75rem', background: 'rgba(255, 255, 255, 0.1)', border: '1px solid var(--border-light)', color: 'var(--text-main)', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>{user.tier || 'Pro Tier'}</span>
             <span style={{ padding: '0.25rem 0.75rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--success)', color: 'var(--success)', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>Identity Verified</span>
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', minWidth: '150px' }}>
           <button className="btn btn-primary" style={{ padding: '0.75rem 1rem', width: '100%' }}>Edit Profile</button>
-          <button className="btn btn-glass" style={{ padding: '0.75rem 1rem', width: '100%' }}>Security</button>
+          <button 
+            className="btn btn-glass" 
+            onClick={logoutUser}
+            style={{ padding: '0.75rem 1rem', width: '100%', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' }}
+          >
+            Sign Out
+          </button>
         </div>
       </div>
 
