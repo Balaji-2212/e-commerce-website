@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Supplies - Staff Portal</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .status-badge.pending { background: var(--warning-bg); color: var(--warning); }
+    .status-badge.approved { background: var(--success-bg); color: var(--success); }
+    .status-badge.rejected { background: var(--danger-bg); color: var(--danger); }
+  </style>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1A6B8A">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+
+<body class="dashboard-body">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon" style="font-size: 24px; color: var(--primary); margin-right: 12px;">✨</div>
+      <div>
+        <div class="brand-name" style="line-height: 1.1;">Srijes<br><span style="font-size: 11px; font-weight: normal; color: var(--muted);">the beauty destination</span></div>
+      </div>
+      <button class="close-btn" id="closeSidebar" onclick="closeSidebar()">✕</button>
+    </div>
+
+    <div class="staff-badge">
+      <div class="staff-avatar-sm" id="sidebarAvatar">PS</div>
+      <div class="staff-badge-info">
+        <div class="staff-badge-name" id="sidebarName">Priya Sharma</div>
+        <div class="staff-badge-role" id="sidebarRole">Senior Stylist • 9AM–6PM</div>
+      </div>
+      <div class="status-dot active" id="sidebarDot"></div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item ripple" onclick="window.location.href='index.html'">
+        <span class="nav-icon">📊</span> My Dashboard
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='schedule.html'">
+        <span class="nav-icon">📅</span> My Schedule
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='attendance.html'">
+        <span class="nav-icon">⏱️</span> Attendance
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='clients.html'">
+        <span class="nav-icon">👥</span> Client Records
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='services.html'">
+        <span class="nav-icon">💇‍♀️</span> Services
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='analytics.html'">
+        <span class="nav-icon">📈</span> Analytics
+      </button>
+      <button class="nav-item ripple active" onclick="window.location.href='request-supplies.html'">
+        <span class="nav-icon">📦</span> Request Supplies
+        <span class="nav-dot"></span>
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='staff-summary.html'">
+        <span class="nav-icon">📝</span> Staff Summary
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='settings.html'">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+    </nav>
+  </aside>
+
+  <!-- OVERLAY -->
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <button class="menu-btn" onclick="openSidebar()">☰</button>
+      <div class="topbar-info">
+        <div class="topbar-title">Request Supplies</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="status-badge active ripple" id="headerStatus" onclick="toggleBreak()" style="border: none; cursor: pointer" title="Click to start/end break">
+          🟢 On Duty
+        </button>
+        <button class="icon-btn" onclick="toggleDark()" title="Toggle theme">🌙</button>
+        <div class="header-profile">
+          <div class="staff-avatar-sm" id="headerAvatar">PS</div>
+          <div class="header-profile-info">
+            <div class="hp-name" id="headerName">Priya Sharma</div>
+            <div class="hp-role">Senior Stylist • <span style="color: #e74c3c; font-weight: 600; cursor: pointer;" onclick="logout()">Logout 🚪</span></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-heading">
+        <h1 class="greeting">Inventory Requests</h1>
+        <p class="shift-line">Request supplies for your station and track their approval status.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; align-items: start;">
+        
+        <!-- NEW REQUEST FORM -->
+        <div class="card" style="padding: 24px;">
+          <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--text-main);">New Request</h2>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+              <label style="font-size: 13px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 6px;">Select Item</label>
+              <select id="invItem" class="form-input" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--muted-bg); color: var(--fg);"></select>
+            </div>
+            <div>
+              <label style="font-size: 13px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 6px;">Quantity Needed</label>
+              <input type="number" id="invQty" class="form-input" value="1" min="1" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--muted-bg); color: var(--fg);">
+            </div>
+            <div>
+              <label style="font-size: 13px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 6px;">Station / Room</label>
+              <input type="text" id="invStation" class="form-input" placeholder="e.g., Station 4" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--muted-bg); color: var(--fg);">
+            </div>
+            <button class="btn-primary ripple" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 8px;" onclick="submitInventoryRequest()">
+              Send Request
+            </button>
+          </div>
+        </div>
+
+        <!-- REQUEST HISTORY -->
+        <div class="card" style="padding: 24px; min-height: 400px;">
+          <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--text-main);">My Requests History</h2>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border); color: var(--muted); font-size: 12px; text-transform: uppercase;">
+                  <th style="padding: 12px; text-align: left;">Date</th>
+                  <th style="padding: 12px; text-align: left;">Item</th>
+                  <th style="padding: 12px; text-align: left;">Qty</th>
+                  <th style="padding: 12px; text-align: left;">Station</th>
+                  <th style="padding: 12px; text-align: left;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="requestHistoryBody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999;"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Setup the inventory options
+      setupInventoryOptions();
+      // Render the history
+      renderRequestHistory();
+      
+      // Update history when localStorage changes
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'openStockRequests') {
+          renderRequestHistory();
+        }
+      });
+    });
+
+    function setupInventoryOptions() {
+      const mergedInventory = {};
+      // Assuming ROLE_INVENTORY_MAP is loaded from app.js
+      if (typeof ROLE_INVENTORY_MAP !== 'undefined') {
+        for (const roleMap of Object.values(ROLE_INVENTORY_MAP)) {
+          for (const [category, items] of Object.entries(roleMap)) {
+            if (!mergedInventory[category]) mergedInventory[category] = new Set();
+            items.forEach(item => mergedInventory[category].add(item));
+          }
+        }
+
+        const selectEl = document.getElementById("invItem");
+        if (selectEl) {
+          let optionsHtml = '<option value="" disabled selected>Select a supply item...</option>';
+          for (const [category, itemsSet] of Object.entries(mergedInventory)) {
+            optionsHtml += `<optgroup label="── ${category} ──">`;
+            Array.from(itemsSet).sort().forEach(item => {
+              optionsHtml += `<option value="${item}">${item}</option>`;
+            });
+            optionsHtml += `</optgroup>`;
+          }
+          selectEl.innerHTML = optionsHtml;
+        }
+      }
+    }
+
+    function renderRequestHistory() {
+      const tbody = document.getElementById('requestHistoryBody');
+      if (!tbody) return;
+
+      const requests = JSON.parse(localStorage.getItem('openStockRequests') || '[]');
+      const staffName = (typeof STAFF_DATA !== 'undefined' && STAFF_DATA[currentStaff]) ? STAFF_DATA[currentStaff].name : sessionStorage.getItem('loggedInUser');
+      
+      // Filter requests to only show this staff member's requests
+      const myRequests = requests.filter(r => r.staffName === staffName || !r.staffName); // Fallback if staffName wasn't set
+
+      // Sort descending by timestamp
+      myRequests.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      if (myRequests.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--muted);">No previous requests found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = myRequests.map(req => {
+        const date = req.timestamp ? new Date(req.timestamp).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Unknown';
+        const statusLower = (req.status || 'pending').toLowerCase();
+        return `<tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px; color: var(--muted); font-size: 13px;">${date}</td>
+          <td style="padding: 12px; font-weight: 600;">${req.item}</td>
+          <td style="padding: 12px;">${req.qty}</td>
+          <td style="padding: 12px; color: var(--muted);">${req.station}</td>
+          <td style="padding: 12px;">
+            <span class="status-badge ${statusLower}">${req.status || 'Pending'}</span>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+    
+    // Override the app.js submitInventoryRequest to also render history when submitted from here
+    const originalSubmitInventoryRequest = window.submitInventoryRequest;
+    window.submitInventoryRequest = async function() {
+      if (typeof originalSubmitInventoryRequest === 'function') {
+        await originalSubmitInventoryRequest();
+        renderRequestHistory(); // Instantly update the table
+        // Reset form
+        document.getElementById('invItem').value = '';
+        document.getElementById('invQty').value = '1';
+        document.getElementById('invStation').value = '';
+      }
+    };
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

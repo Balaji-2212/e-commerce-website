@@ -1,0 +1,1223 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Client Records · Srijes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── SCHEDULE PAGE ENHANCED STYLES ── */
+    :root {
+      --accent-gold: #f59e0b;
+      --accent-gold-bg: #fffbeb;
+      --accent-purple: #8b5cf6;
+      --accent-purple-bg: #ede9fe;
+      --accent-teal: #0d9488;
+      --accent-teal-bg: #f0fdfa;
+      --card-glass: rgba(255,255,255,0.85);
+      --timeline-bar: #e2e8f0;
+    }
+
+    body.dark {
+      --card-glass: rgba(12, 74, 110, 0.85);
+      --timeline-bar: #0e7490;
+    }
+
+    /* ── PAGE HEADER BAND ── */
+    .sched-page-header {
+      background: linear-gradient(135deg, #1a6b8a 0%, #4a90e2 60%, #8b5cf6 100%);
+      border-radius: 20px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      color: white;
+      box-shadow: 0 10px 40px rgba(26,107,138,0.3);
+    }
+
+    .sched-page-header::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 50%;
+    }
+
+    .sched-page-header::after {
+      content: '';
+      position: absolute;
+      bottom: -50px; left: 30%;
+      width: 140px; height: 140px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+
+    .sched-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .sched-header-left h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .sched-header-left p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      font-weight: 400;
+    }
+
+    .sched-live-clock-pill {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 40px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .sched-live-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pulse 1.5s infinite;
+      box-shadow: 0 0 8px #4ade80;
+    }
+
+    /* ── PROGRESS STRIP ── */
+    .sched-progress-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .sched-prog-card {
+      background: var(--card-glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: default;
+    }
+
+    .sched-prog-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .sched-prog-icon {
+      width: 44px; height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .sched-prog-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sched-prog-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+
+    .sched-prog-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--fg);
+      line-height: 1;
+    }
+
+    .sched-prog-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .sched-prog-bar-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 4px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+
+    .sched-prog-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ── MAIN 2-COL LAYOUT ── */
+    .sched-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 20px;
+    }
+
+    /* ── TIMELINE CARD ── */
+    .sched-timeline-card {
+      background: var(--card-glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .sched-timeline-header {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .sched-tl-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sched-tl-title h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      margin: 0;
+    }
+
+    .badge-live {
+      font-size: 10px;
+      font-weight: 700;
+      background: #dcfce7;
+      color: #16a34a;
+      padding: 3px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      animation: pulseFade 1.5s infinite;
+    }
+
+    @keyframes pulseFade {
+      0%,100% { opacity:1; }
+      50% { opacity:0.6; }
+    }
+
+    .sched-tl-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sched-filter-select {
+      padding: 7px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--muted-bg);
+      color: var(--fg);
+      font-size: 12px;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .sched-filter-select:focus { border-color: var(--primary); }
+
+    .sched-upcoming-pill {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    .sched-add-btn {
+      background: linear-gradient(135deg, var(--primary), #4a90e2);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(26,107,138,0.25);
+    }
+
+    .sched-add-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(26,107,138,0.35);
+    }
+
+    /* Progress Bar Row */
+    .sched-apt-progress-row {
+      padding: 12px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sched-apt-progress-label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .sched-apt-progress-track {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .sched-apt-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 6px;
+      transition: width 1s ease;
+    }
+
+    .sched-apt-progress-pct {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    /* AI Banner */
+    .sched-ai-banner {
+      margin: 14px 22px;
+      background: linear-gradient(135deg, rgba(26,107,138,0.07), rgba(139,92,246,0.07));
+      border: 1px solid rgba(26,107,138,0.2);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sched-ai-banner-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      line-height: 1.5;
+    }
+
+    /* Outdoor hub */
+    .outdoor-hub {
+      margin: 0 22px 14px;
+      background: var(--muted-bg);
+      border-radius: 14px;
+      padding: 14px;
+      display: none;
+    }
+
+    .outdoor-hub.visible { display: block; }
+
+    .outdoor-stats-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .outdoor-stat-chip {
+      flex: 1;
+      background: var(--card);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .outdoor-stat-chip .icon {
+      font-size: 18px;
+    }
+
+    .outdoor-stat-chip .label {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .outdoor-stat-chip .val {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--fg);
+    }
+
+    /* Timeline items */
+    .sched-timeline {
+      padding: 16px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sched-apt-item {
+      display: flex;
+      align-items: stretch;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .sched-apt-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      border-radius: 4px 0 0 4px;
+    }
+
+    .sched-apt-item.done::before { background: var(--success); }
+    .sched-apt-item.in-progress::before { background: var(--warning); }
+    .sched-apt-item.upcoming::before { background: var(--primary); }
+
+    .sched-apt-item.in-progress {
+      border-color: var(--warning);
+      background: linear-gradient(to right, rgba(245,158,11,0.04), var(--card));
+      box-shadow: 0 4px 20px rgba(245,158,11,0.1);
+    }
+
+    .sched-apt-item.done {
+      opacity: 0.72;
+    }
+
+    .sched-apt-item:hover {
+      transform: translateX(4px);
+      box-shadow: var(--shadow-hover);
+      opacity: 1 !important;
+    }
+
+    .sched-apt-time-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-start;
+      min-width: 56px;
+      padding-top: 2px;
+    }
+
+    .sched-apt-time {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--fg);
+      white-space: nowrap;
+    }
+
+    .sched-apt-dur {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .sched-apt-dot-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 4px;
+    }
+
+    .sched-apt-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sched-apt-dot.done { background: var(--success); }
+    .sched-apt-dot.in-progress {
+      background: var(--warning);
+      box-shadow: 0 0 8px rgba(245,158,11,0.5);
+      animation: pulse 1.5s infinite;
+    }
+    .sched-apt-dot.upcoming { background: var(--primary); }
+
+    .sched-apt-line {
+      flex: 1;
+      width: 2px;
+      background: var(--border);
+      margin-top: 4px;
+    }
+
+    .sched-apt-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sched-apt-client {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--fg);
+      margin-bottom: 3px;
+    }
+
+    .sched-apt-service {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .sched-apt-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sched-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .sched-tag.indoor { background: var(--primary-light); color: var(--primary); }
+    .sched-tag.outdoor { background: var(--accent-gold-bg); color: var(--accent-gold); }
+
+    .sched-apt-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .sched-status-chip {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .sched-status-chip.done { background: var(--success-bg); color: var(--success); }
+    .sched-status-chip.in-progress { background: var(--accent-gold-bg); color: var(--accent-gold); }
+    .sched-status-chip.upcoming { background: var(--primary-light); color: var(--primary); }
+
+    .sched-action-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .sched-action-btns button {
+      background: var(--muted-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sched-action-btns button:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .sched-action-btns button.primary {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: transparent;
+    }
+
+    /* ── RIGHT COLUMN ── */
+    .sched-right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Shift Summary Card */
+    .sched-shift-card {
+      background: linear-gradient(135deg, #1a6b8a 0%, #4a90e2 100%);
+      border-radius: 20px;
+      padding: 22px;
+      color: white;
+      box-shadow: 0 8px 30px rgba(26,107,138,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sched-shift-card::after {
+      content: '⏰';
+      position: absolute;
+      right: -10px; bottom: -10px;
+      font-size: 80px;
+      opacity: 0.06;
+    }
+
+    .sched-shift-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sched-shift-time {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 16px;
+    }
+
+    .sched-shift-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .sched-shift-metric {
+      background: rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 12px;
+      backdrop-filter: blur(4px);
+    }
+
+    .sched-shift-metric-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.65);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
+    }
+
+    .sched-shift-metric-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+    }
+
+    /* Reminders Card */
+    .sched-reminders-card {
+      background: var(--card-glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .sched-reminders-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sched-reminders-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sched-add-reminder-btn {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sched-add-reminder-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .sched-reminders-body {
+      padding: 14px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sched-reminder-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--muted-bg);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .sched-reminder-item:hover { background: var(--border); }
+
+    .sched-reminder-cb {
+      width: 18px; height: 18px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .sched-reminder-cb.checked {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+      font-size: 11px;
+    }
+
+    .sched-reminder-text {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--fg);
+      transition: all 0.2s;
+    }
+
+    .sched-reminder-text.done {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .sched-reminder-time {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* Quick Notes */
+    .sched-notes-card {
+      background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(251,191,36,0.05));
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .sched-notes-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sched-notes-area {
+      width: 100%;
+      min-height: 80px;
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 10px;
+      padding: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--fg);
+      background: rgba(255,255,255,0.6);
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    body.dark .sched-notes-area {
+      background: rgba(12,74,110,0.5);
+    }
+
+    .sched-notes-area:focus {
+      border-color: var(--accent-gold);
+    }
+
+    /* Animation */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sched-apt-item {
+      animation: fadeSlideUp 0.35s backwards;
+    }
+
+    @media (max-width: 900px) {
+      .sched-grid { grid-template-columns: 1fr; }
+      .sched-progress-strip { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .sched-progress-strip { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1A6B8A">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon" style="font-size: 24px; color: var(--primary); margin-right: 12px;">✦</div>
+      <div>
+        <div class="brand-name" style="line-height: 1.1;">Srijes<br><span style="font-size: 11px; font-weight: normal; color: var(--muted);">the beauty destination</span></div>
+      </div>
+      <button class="close-btn" id="closeSidebar" onclick="closeSidebar()">✕</button>
+    </div>
+
+    <div class="staff-badge">
+      <div class="staff-avatar-sm" id="sidebarAvatar">PS</div>
+      <div class="staff-badge-info">
+        <div class="staff-badge-name" id="sidebarName">Priya Sharma</div>
+        <div class="staff-badge-role" id="sidebarRole">Senior Stylist · 9AM–6PM</div>
+      </div>
+      <div class="status-dot active" id="sidebarDot"></div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item ripple" onclick="window.location.href='index.html'">
+        <span class="nav-icon">⊞</span> My Dashboard
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='schedule.html'">
+        <span class="nav-icon">📅</span> My Schedule
+        
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='attendance.html'">
+        <span class="nav-icon">🕐</span> Attendance
+      </button>
+      <button class="nav-item ripple active" onclick="window.location.href='clients.html'">
+        <span class="nav-icon">👥</span> Client Records
+        <span class="nav-dot"></span>
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='services.html'">
+        <span class="nav-icon">✂️</span> Services
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='analytics.html'">
+        <span class="nav-icon">📊</span> Analytics
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='request-supplies.html'">
+        <span class="nav-icon">📦</span> Request Supplies
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='staff-summary.html'">
+        <span class="nav-icon">📝</span> Staff Summary
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='settings.html'">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+    </nav>
+  </aside>
+
+  <!-- OVERLAY -->
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- MAIN -->
+  <div class="main-wrap">
+    <!-- HEADER -->
+    <header class="topbar">
+      <button class="menu-btn" onclick="openSidebar()">☰</button>
+      <div class="topbar-info">
+        <div class="topbar-title">Staff Dashboard</div>
+        <div class="topbar-date" id="todayDate"></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="status-badge active ripple" id="headerStatus" onclick="toggleBreak()" style="border: none; cursor: pointer" title="Click to start/end break">● On Duty</button>
+        <button class="icon-btn" onclick="toggleDark()" title="Toggle theme">🌙</button>
+        <div style="position: relative">
+          <button class="icon-btn notif-btn" onclick="toggleNotifPanel()">🔔<span class="notif-dot"></span></button>
+          <div class="notif-panel hidden" id="notifPanel">
+            <div class="notif-header">Notifications</div>
+            <div class="notif-body">
+              <div class="notif-item"><span class="notif-icon success">✅</span><div><strong>Leave Approved</strong><br>Your leave for 20th May is approved.</div></div>
+              <div class="notif-item"><span class="notif-icon warning">📅</span><div><strong>Next Client</strong><br>Divya is arriving in 15 mins.</div></div>
+              <div class="notif-item"><span class="notif-icon primary">⭐</span><div><strong>New Review</strong><br>Anika left you a 5-star review!</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="header-profile">
+          <div class="staff-avatar-sm" id="headerAvatar">PS</div>
+          <div class="header-profile-info" title="Click to Logout">
+            <div class="hp-name" id="headerName">Priya Sharma</div>
+            <div class="hp-role"><span id="headerRole">Senior Stylist</span> · <span style="color: #e74c3c; font-weight: 600">Logout 🚪</span></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content">
+      <!-- PAGE HEADING -->
+      <div class="page-heading">
+        <div>
+          <h1 class="greeting" id="greeting">Good afternoon, Priya ✨</h1>
+          <p class="shift-line">
+            Your shift today:
+            <strong id="shiftLine">9:00 AM – 6:00 PM</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- SECTIONS CONTAINER -->
+      <div id="dashboardSection" class="content-section">
+        <!-- CLIENT RECORDS HEADER -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Client Records</div>
+              <div class="card-sub">Access history, formulas, and notes</div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="clientSearch" class="form-input" placeholder="Search clients..."
+                onkeyup="filterClients()" style="padding: 6px 12px;" />
+            </div>
+          </div>
+        </div>
+
+        <div class="main-grid" style="grid-template-columns: 350px 1fr; align-items: start;">
+          <!-- CLIENT LIST -->
+          <div class="left-col" style="position: sticky; top: 90px;">
+            <div class="card" style="height: calc(100vh - 200px); overflow-y: auto; padding: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+              <div id="clientList" class="client-list">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- CLIENT DETAIL -->
+          <div class="right-col">
+            <div class="card" id="clientDetailCard"
+              style="min-height: calc(100vh - 200px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--muted); box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: var(--card);">
+              <div style="font-size: 48px; margin-bottom: 16px;">👤</div>
+              <div style="font-size: 15px;">Select a client from the list<br>to view their history and formulas.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-note">Srijes Salon · Staff Portal</div>
+      </div> <!-- End dashboardSection -->
+
+    </main>
+  </div>
+
+  <!-- CALENDAR MODAL -->
+  <div class="modal-overlay hidden" id="calModalOverlay" onclick="closeCalModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <h3 id="calModalTitle">Attendance Details</h3>
+        <button class="close-btn" style="display: block" onclick="closeCalModal()">
+          ✕
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="calModalContent"></div>
+        <button class="btn-outline ripple" style="width: 100%; margin-top: 16px"
+          onclick="showToast('Dispute raised successfully!', 'warning', '✋')">
+          Raise a Dispute
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD APPOINTMENT MODAL -->
+  <div class="modal-overlay hidden" id="addAptModalOverlay" onclick="closeAddAptModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Add Appointment</h3>
+        <button class="close-btn" style="display: block" onclick="closeAddAptModal()">
+          ✕
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 12px">
+          <div>
+            <label style="font-size: 12px; color: var(--muted); font-weight: 600">Client Name</label>
+            <input type="text" id="newAptClient" class="form-input" placeholder="E.g. Aditi Sharma" style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid var(--border);
+                  border-radius: 6px;
+                  background: var(--muted-bg);
+                  color: var(--fg);
+                  margin-top: 4px;
+                " />
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--muted); font-weight: 600">Phone Number</label>
+            <input type="text" id="newAptPhone" class="form-input" placeholder="10-digit number" style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid var(--border);
+                  border-radius: 6px;
+                  background: var(--muted-bg);
+                  color: var(--fg);
+                  margin-top: 4px;
+                " />
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--muted); font-weight: 600">Service</label>
+            <input type="text" id="newAptService" class="form-input" placeholder="E.g. Haircut" style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid var(--border);
+                  border-radius: 6px;
+                  background: var(--muted-bg);
+                  color: var(--fg);
+                  margin-top: 4px;
+                " />
+          </div>
+          <div style="display: flex; gap: 12px">
+            <div style="flex: 1">
+              <label style="font-size: 12px; color: var(--muted); font-weight: 600">Time</label>
+              <input type="time" id="newAptTime" class="form-input" style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid var(--border);
+                    border-radius: 6px;
+                    background: var(--muted-bg);
+                    color: var(--fg);
+                    margin-top: 4px;
+                  " />
+            </div>
+            <div style="flex: 1">
+              <label style="font-size: 12px; color: var(--muted); font-weight: 600">Duration (min)</label>
+              <input type="number" id="newAptDuration" class="form-input" value="60" style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid var(--border);
+                    border-radius: 6px;
+                    background: var(--muted-bg);
+                    color: var(--fg);
+                    margin-top: 4px;
+                  " />
+            </div>
+          </div>
+          <button class="btn-primary ripple" style="width: 100%; margin-top: 12px; padding: 10px"
+            onclick="submitNewAppointment()">
+            Save Appointment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+  <!-- BREAK MODAL -->
+  <div class="modal-overlay hidden" id="breakModalOverlay" onclick="closeBreakModal()">
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 300px">
+      <div class="modal-head">
+        <h3>Start Break</h3>
+        <button class="close-btn" style="display: block" onclick="closeBreakModal()">
+          ✕
+        </button>
+      </div>
+      <div class="modal-body">
+        <label style="font-size: 12px; color: var(--muted); font-weight: 600">Break Duration (mins)</label>
+        <input type="number" id="breakDurationInput" class="form-input" value="15" style="
+              width: 100%;
+              padding: 8px;
+              border: 1px solid var(--border);
+              border-radius: 6px;
+              background: var(--muted-bg);
+              color: var(--fg);
+              margin-top: 4px;
+              margin-bottom: 12px;
+            " />
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <button class="btn-outline btn-sm ripple" style="flex: 1"
+            onclick="document.getElementById('breakDurationInput').value=15; startBreak()">15m</button>
+          <button class="btn-outline btn-sm ripple" style="flex: 1"
+            onclick="document.getElementById('breakDurationInput').value=30; startBreak()">30m</button>
+          <button class="btn-outline btn-sm ripple" style="flex: 1"
+            onclick="document.getElementById('breakDurationInput').value=45; startBreak()">45m</button>
+        </div>
+        <button class="btn-primary ripple" style="width: 100%; padding: 10px" onclick="startBreak()">
+          Start Custom Timer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVENTORY MODAL -->
+  <div class="modal-overlay hidden" id="inventoryModalOverlay" onclick="closeInventoryModal()">
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 400px">
+      <div class="modal-head">
+        <h3>Request Supplies</h3>
+        <button class="close-btn" style="display: block" onclick="closeInventoryModal()">
+          ✕
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 12px">
+          <div>
+            <label style="font-size: 12px; color: var(--muted); font-weight: 600">Select Item</label>
+            <select id="invItem" class="form-input" style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid var(--border);
+                  border-radius: 6px;
+                  background: var(--muted-bg);
+                  color: var(--fg);
+                  margin-top: 4px;
+                ">
+              <option value="Olaplex">Olaplex</option>
+              <option value="Shampoo">Shampoo</option>
+              <option value="Gloves">Gloves</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--muted); font-weight: 600">Quantity Needed</label>
+            <input type="number" id="invQty" class="form-input" value="1" min="1" style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid var(--border);
+                  border-radius: 6px;
+                  background: var(--muted-bg);
+                  color: var(--fg);
+                  margin-top: 4px;
+                " />
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--muted); font-weight: 600">Station / Room</label>
+            <input type="text" id="invStation" class="form-input" placeholder="e.g., Station 4" style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid var(--border);
+                  border-radius: 6px;
+                  background: var(--muted-bg);
+                  color: var(--fg);
+                  margin-top: 4px;
+                " />
+          </div>
+          <button class="btn-primary ripple" style="width: 100%; margin-top: 8px; padding: 10px"
+            onclick="submitInventoryRequest()">
+            Send Request
+          </button>
+        </div>
+      </div>
+    </div>
+    </div>
+
+  <!-- SERVICE MENU CHEAT SHEET MODAL -->
+  <div class="modal-overlay hidden" id="cheatSheetModalOverlay" onclick="closeCheatSheetModal()">
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 600px; width:90%;">
+      <div class="modal-head">
+        <h3>Service & Price Menu</h3>
+        <button class="close-btn" style="display: block" onclick="closeCheatSheetModal()">✕</button>
+      </div>
+      <div class="modal-body" style="padding:16px;">
+        <input type="text" id="cheatSheetSearch" class="form-input" placeholder="Search services..."
+          onkeyup="filterCheatSheet()"
+          style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--fg); margin-bottom: 16px;" />
+
+        <div id="cheatSheetBody" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding-right: 4px;">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAFF CHAT FAB & WINDOW -->
+  <button class="chat-fab ripple" onclick="toggleStaffChat()">💬</button>
+  <div class="chat-window hidden" id="staffChatWindow">
+    <div class="chat-header">
+      <div style="font-weight: 600">Reception Desk</div>
+      <button class="close-btn" style="display: block" onclick="toggleStaffChat()">
+        ✕
+      </button>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="chat-msg received">
+        Hi! Let us know if you need anything.
+      </div>
+    </div>
+    <div class="chat-quick-replies">
+      <button class="btn-outline btn-sm ripple" onclick="sendChatMessage('Running 10 mins late')">
+        10 mins late
+      </button>
+      <button class="btn-outline btn-sm ripple" onclick="sendChatMessage('Client arrived?')">
+        Client arrived?
+      </button>
+      <button class="btn-outline btn-sm ripple" onclick="sendChatMessage('Need help at station')">
+        Need help
+      </button>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Type message..."
+        onkeypress="if (event.key === 'Enter') sendChatMessage(this.value);" />
+      <button class="btn-primary ripple" onclick="sendChatMessage(document.getElementById('chatInput').value)">
+        ➤
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

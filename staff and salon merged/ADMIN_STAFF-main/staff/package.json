@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsdom": "^29.1.1",
+    "mongoose": "^9.7.0",
+    "puppeteer": "^25.1.0",
+    "twilio": "^6.0.2"
+  }
+}

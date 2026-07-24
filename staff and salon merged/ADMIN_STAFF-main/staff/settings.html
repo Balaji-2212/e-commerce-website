@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Srijes, the beauty destination</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1A6B8A">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+
+<body class="dashboard-body">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon" style="font-size: 24px; color: var(--primary); margin-right: 12px;">✦</div>
+      <div>
+        <div class="brand-name" style="line-height: 1.1;">Srijes<br><span style="font-size: 11px; font-weight: normal; color: var(--muted);">the beauty destination</span></div>
+      </div>
+      <button class="close-btn" id="closeSidebar" onclick="closeSidebar()">
+        ✕
+      </button>
+    </div>
+
+    <div class="staff-badge">
+      <div class="staff-avatar-sm" id="sidebarAvatar">PS</div>
+      <div class="staff-badge-info">
+        <div class="staff-badge-name" id="sidebarName">Priya Sharma</div>
+        <div class="staff-badge-role" id="sidebarRole">
+          Senior Stylist · 9AM–6PM
+        </div>
+      </div>
+      <div class="status-dot active" id="sidebarDot"></div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item ripple" onclick="window.location.href='index.html'">
+        <span class="nav-icon">⊞</span> My Dashboard
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='schedule.html'">
+        <span class="nav-icon">📅</span> My Schedule
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='attendance.html'">
+        <span class="nav-icon">🕐</span> Attendance
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='clients.html'">
+        <span class="nav-icon">👥</span> Client Records
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='services.html'">
+        <span class="nav-icon">✂️</span> Services
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='analytics.html'">
+        <span class="nav-icon">📊</span> Analytics
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='request-supplies.html'">
+        <span class="nav-icon">📦</span> Request Supplies
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='staff-summary.html'">
+        <span class="nav-icon">📝</span> Staff Summary
+      </button>
+      <button class="nav-item ripple active" onclick="window.location.href='settings.html'">
+        <span class="nav-icon">⚙️</span> Settings
+        <span class="nav-dot"></span>
+      </button>
+    </nav>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <button class="menu-btn" onclick="openSidebar()">☰</button>
+      <div class="topbar-info">
+        <div class="topbar-title">Account Settings</div>
+      </div>
+      <div class="header-profile">
+        <div class="staff-avatar-sm" id="headerAvatar">PS</div>
+        <div class="header-profile-info" >
+          <div class="hp-name" id="headerName">Priya Sharma</div>
+          <div class="hp-role">Senior Stylist · <span style="color: #e74c3c; font-weight: 600">Logout 🚪</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-heading">
+        <h1 class="greeting">Profile Settings</h1>
+        <p class="shift-line">Manage your professional profile and account security</p>
+      </div>
+
+      <div class="card" style="max-width: 800px; margin: 0 auto; padding: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 35px;">
+          <div style="display: flex; align-items: center; gap: 20px;">
+            <div class="avatar-wrapper" style="position: relative; cursor: pointer; width: 80px; height: 80px;"
+              onclick="if(isEditMode) document.getElementById('avatarUpload').click()">
+              <div class="staff-avatar-lg" id="settingsAvatar"
+                style="width: 100%; height: 100%; font-size: 28px; border-radius: 20px; background: linear-gradient(135deg, #1a6b8a, #4a90e2); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; box-shadow: 0 4px 15px rgba(26,107,138,0.2);">
+                PS</div>
+              <div class="avatar-overlay edit-only hidden"
+                style="position: absolute; inset: 0; background: rgba(0,0,0,0.5); border-radius: 20px; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">
+                📷 Change</div>
+              <input type="file" id="avatarUpload" class="hidden" accept="image/*" onchange="previewAvatar(this)" />
+            </div>
+            <div>
+              <h2 style="font-family: 'Playfair Display', serif; margin: 0; font-size: 24px; color: var(--fg);"
+                id="settingsDisplayName">Priya Sharma</h2>
+              <p style="color: var(--muted); margin-top: 4px; font-size: 14px;" id="settingsDisplayRole">Senior Stylist
+              </p>
+            </div>
+          </div>
+          <button type="button" id="editToggleBtn" class="btn-outline ripple" onclick="toggleEditMode()"
+            style="padding: 8px 20px; font-size: 13px;">✏️ Edit Profile</button>
+        </div>
+
+        <!-- Stats row matching Dashboard profile card -->
+        <div style="display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap;">
+          <div
+            style="flex:1; min-width:100px; background: var(--bg); border-radius:12px; padding:14px; text-align:center;">
+            <div
+              style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">
+              Rating</div>
+            <div style="font-size:20px; font-weight:700; color:var(--primary);" id="setRating">—</div>
+          </div>
+          <div
+            style="flex:1; min-width:100px; background: var(--bg); border-radius:12px; padding:14px; text-align:center;">
+            <div
+              style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">
+              Attendance</div>
+            <div style="font-size:20px; font-weight:700; color:var(--success);" id="setAttendance">—</div>
+          </div>
+          <div
+            style="flex:1; min-width:100px; background: var(--bg); border-radius:12px; padding:14px; text-align:center;">
+            <div
+              style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">
+              Return Rate</div>
+            <div style="font-size:20px; font-weight:700; color:var(--warning);" id="setReturnRate">—</div>
+          </div>
+        </div>
+
+        <form id="settingsForm" onsubmit="event.preventDefault(); saveSettings();">
+
+          <!-- 1. PERSONAL INFO -->
+          <div class="settings-section">
+            <h3 class="section-title">Personal Information</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="setName" class="form-input readonly-style" value="Priya Sharma" readonly
+                  required />
+              </div>
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="setPhone" class="form-input readonly-style" value="98765 43210" readonly
+                  required />
+              </div>
+              <div class="form-group full-width">
+                <label>Email Address</label>
+                <input type="email" id="setEmail" class="form-input readonly-style" value="priya@medhika.in" readonly
+                  required />
+              </div>
+              <div class="form-group">
+                <label>Join Date</label>
+                <input type="text" id="setJoinDate" class="form-input readonly-style" value="Mar 2022" readonly />
+              </div>
+              <div class="form-group">
+                <label>Shift Hours</label>
+                <input type="text" id="setShift" class="form-input readonly-style" value="9:00 AM – 6:00 PM" readonly />
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. PROFESSIONAL PROFILE -->
+          <div class="settings-section">
+            <h3 class="section-title">Professional Profile</h3>
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label>Professional Role</label>
+                <input type="text" id="setRoleText" class="form-input readonly-style" value="Senior Stylist" readonly />
+                <select id="setRole" class="form-input hidden">
+                  <option value="Senior Stylist">Senior Stylist</option>
+                  <option value="Junior Stylist">Junior Stylist</option>
+                  <option value="Makeup Artist">Makeup Artist</option>
+                  <option value="Nail Technician">Nail Technician</option>
+                  <option value="Salon Manager">Salon Manager</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label>Professional Bio</label>
+                <textarea id="setBio" class="form-input readonly-style" rows="3"
+                  readonly>Senior stylist with over 8 years of experience in bridal makeup and advanced hair coloring techniques. Passionate about creating unique looks for every client.</textarea>
+              </div>
+              <div class="form-group full-width">
+                <label>My Specialties <span class="edit-only hidden"
+                    style="font-size:12px; color:var(--primary); cursor:pointer; float:right; font-weight:600;"
+                    onclick="addSpecialty()">+ Add Custom</span></label>
+                <div class="specialty-grid" id="specialtyContainer">
+                  <label class="checkbox-item"><input type="checkbox" checked disabled /> Haircut</label>
+                  <label class="checkbox-item"><input type="checkbox" checked disabled /> Hair Color</label>
+                  <label class="checkbox-item"><input type="checkbox" checked disabled /> Bridal Makeup</label>
+                  <label class="checkbox-item"><input type="checkbox" disabled /> Nail Art</label>
+                  <label class="checkbox-item"><input type="checkbox" disabled /> Skin Treatments</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. COMPLIANCE & FINANCIALS -->
+          <div class="settings-section">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 15px;">
+              <h3 class="section-title" style="margin-bottom: 0;">Compliance & Financials</h3>
+              <span
+                style="font-size: 11px; color: var(--warning); font-weight: 600; padding: 4px 8px; background: var(--warning-bg); border-radius: 8px;">🔒
+                Locked once saved</span>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Aadhar Number</label>
+                <input type="text" id="setAadhar" class="form-input readonly-style" placeholder="Not provided" value=""
+                  readonly />
+              </div>
+              <div class="form-group">
+                <label>PAN Number</label>
+                <input type="text" id="setPan" class="form-input readonly-style" placeholder="Not provided" value=""
+                  readonly style="text-transform: uppercase" />
+              </div>
+              <div class="form-group">
+                <label>Bank Account Number</label>
+                <input type="text" id="setBankAcc" class="form-input readonly-style" placeholder="Not provided" value=""
+                  readonly />
+              </div>
+              <div class="form-group">
+                <label>Bank IFSC Code</label>
+                <input type="text" id="setBankIfsc" class="form-input readonly-style" placeholder="Not provided"
+                  value="" readonly style="text-transform: uppercase" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. CALENDAR & BOOKING PREFERENCES -->
+          <div class="settings-section">
+            <h3 class="section-title">Calendar & Booking Preferences</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Buffer Time (Cleanup)</label>
+                <select id="setBufferTime" class="form-input readonly-style" disabled style="-webkit-appearance: none; appearance: none;">
+                  <option value="0">No buffer</option>
+                  <option value="5">5 mins</option>
+                  <option value="10" selected>10 mins</option>
+                  <option value="15">15 mins</option>
+                </select>
+              </div>
+              <div class="form-group" style="display: flex; flex-direction: column; justify-content: center;">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 15px;">
+                  <div>
+                    <strong style="color: var(--fg); font-size: 14px;">Online Booking Visibility</strong>
+                    <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">Allow clients to book you via the app</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="setOnlineBooking" checked disabled />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="form-group full-width" style="display: flex; flex-direction: column; justify-content: center; border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <div>
+                    <strong style="color: var(--fg); font-size: 14px;">Allow Double-Booking</strong>
+                    <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">Permit quick services during color processing times</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="setDoubleBooking" disabled />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. NOTIFICATION PREFERENCES -->
+          <div class="settings-section">
+            <h3 class="section-title">Notification Preferences</h3>
+            <div style="background: var(--muted-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--border);">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 15px; border-bottom: 1px solid var(--border); margin-bottom: 15px;">
+                <div>
+                  <strong style="color: var(--fg); font-size: 14px;">New Appointment Alerts</strong>
+                  <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">Get notified via Push and SMS when you are booked.</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="setApptAlerts" checked disabled />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 15px; border-bottom: 1px solid var(--border); margin-bottom: 15px;">
+                <div>
+                  <strong style="color: var(--fg); font-size: 14px;">Client Arrival Alerts</strong>
+                  <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">Ping my tablet when the front desk checks in my client.</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="setArrivalAlerts" checked disabled />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <strong style="color: var(--fg); font-size: 14px;">Daily Schedule Brief</strong>
+                  <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">Receive an automated email at 7:00 AM with today's itinerary.</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="setDailyBrief" disabled />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. INTEGRATIONS -->
+          <div class="settings-section">
+            <h3 class="section-title">Integrations</h3>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg);">
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--muted-bg); display: flex; align-items: center; justify-content: center; font-size: 20px;">📅</div>
+                <div>
+                  <strong style="color: var(--fg); font-size: 15px;">Personal Calendar Sync</strong>
+                  <p style="color: var(--muted); font-size: 13px; margin-top: 4px;">Sync salon appointments to Google or Apple Calendar</p>
+                </div>
+              </div>
+              <button type="button" class="btn-outline ripple" style="padding: 8px 16px; font-size: 13px; opacity: 0.7; cursor: not-allowed;" disabled>Connect</button>
+            </div>
+          </div>
+
+          <!-- 7. SECURITY -->
+          <div class="settings-section">
+            <h3 class="section-title">Security</h3>
+            <div
+              style="background: var(--muted-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px;">
+              <div style="margin-bottom: 20px;">
+                <strong style="color: var(--fg); font-size: 16px; font-family: 'Playfair Display', serif;">Change
+                  Password</strong>
+                <p style="color: var(--muted); font-size: 13px; margin-top: 4px;">Leave these fields blank if you do not
+                  wish to change your current password.</p>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>New Password</label>
+                  <input type="password" id="setPass" class="form-input readonly-style" placeholder="********" readonly
+                    style="background: var(--bg) !important;" />
+                </div>
+                <div class="form-group">
+                  <label>Confirm Password</label>
+                  <input type="password" id="setConfirm" class="form-input readonly-style" placeholder="********"
+                    readonly style="background: var(--bg) !important;" />
+                </div>
+              </div>
+            </div>
+
+            <div
+              style="background: var(--muted-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--border);">
+              <div
+                style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 15px; border-bottom: 1px solid var(--border); margin-bottom: 15px;">
+                <div>
+                  <strong style="color: var(--fg); font-size: 15px;">Two-Factor Authentication (2FA)</strong>
+                  <p style="color: var(--muted); font-size: 13px; margin-top: 4px; max-width: 450px;">Add an extra layer
+                    of security to your account by requiring a verification code when logging in.</p>
+                </div>
+                <label class="toggle-switch" style="opacity: 0.8;">
+                  <input type="checkbox" id="twoFactorToggle" disabled />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <strong style="color: var(--fg); font-size: 15px;">Login Alerts</strong>
+                  <p style="color: var(--muted); font-size: 13px; margin-top: 4px; max-width: 450px;">Receive an email
+                    notification whenever your account is accessed from a new device or location.</p>
+                </div>
+                <label class="toggle-switch" style="opacity: 0.8;">
+                  <input type="checkbox" id="loginAlertsToggle" checked disabled />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div id="formActions" class="hidden"
+            style="margin-top: 40px; display: flex; gap: 16px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid var(--border);">
+            <button type="button" class="btn-outline ripple" onclick="toggleEditMode()"
+              style="padding: 12px 30px;">Cancel</button>
+            <button type="submit" class="btn-primary ripple" style="padding: 12px 40px; font-weight: 700;">Save
+              Changes</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <style>
+    .readonly-style {
+      background: transparent !important;
+      border-color: transparent !important;
+      padding-left: 0 !important;
+      font-weight: 600;
+      color: var(--primary) !important;
+      cursor: default;
+    }
+
+    .readonly-style::placeholder {
+      color: transparent;
+    }
+
+    #setAadhar.readonly-style::placeholder,
+    #setPan.readonly-style::placeholder,
+    #setBankAcc.readonly-style::placeholder,
+    #setBankIfsc.readonly-style::placeholder {
+      color: var(--muted) !important;
+      font-weight: normal;
+      font-style: italic;
+    }
+
+    .settings-section {
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 1px solid var(--border);
+    }
+
+    .settings-section:first-of-type {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 20px;
+      color: var(--primary);
+      font-size: 18px;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #cbd5e1;
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    input:checked+.slider {
+      background-color: var(--primary);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(20px);
+    }
+
+    .avatar-wrapper:hover .edit-only:not(.hidden) {
+      opacity: 1 !important;
+    }
+
+    .avatar-overlay {
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- INVENTORY MODAL -->
+  <div class="modal-overlay hidden" id="inventoryModalOverlay" onclick="closeInventoryModal()">
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 400px">
+      <div class="modal-head">
+        <h3>Request Supplies</h3>
+        <button class="close-btn" style="display: block" onclick="closeInventoryModal()">
+          ✕
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 12px">
+          <div>
+            <label style="font-size: 12px; color: var(--muted); font-weight: 600">Select Item</label>
+            <select id="invItem" class="form-input" style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid var(--border);
+                  border-radius: 6px;
+                  background: var(--muted-bg);
+                  color: var(--fg);
+                  margin-top: 4px;
+                ">
+              <option value="Olaplex">Olaplex</option>
+              <option value="Shampoo">Shampoo</option>
+              <option value="Gloves">Gloves</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--muted); font-weight: 600">Quantity Needed</label>
+            <input type="number" id="invQty" class="form-input" value="1" min="1" style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid var(--border);
+                  border-radius: 6px;
+                  background: var(--muted-bg);
+                  color: var(--fg);
+                  margin-top: 4px;
+                " />
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--muted); font-weight: 600">Station / Room</label>
+            <input type="text" id="invStation" class="form-input" placeholder="e.g., Station 4" style="
+                  width: 100%;
+                  padding: 8px;
+                  border: 1px solid var(--border);
+                  border-radius: 6px;
+                  background: var(--muted-bg);
+                  color: var(--fg);
+                  margin-top: 4px;
+                " />
+          </div>
+          <button class="btn-primary ripple" style="width: 100%; margin-top: 8px; padding: 10px"
+            onclick="submitInventoryRequest()">
+            Send Request
+          </button>
+        </div>
+      </div>
+      </div>
+
+  <!-- SERVICE MENU CHEAT SHEET MODAL -->
+  <div class="modal-overlay hidden" id="cheatSheetModalOverlay" onclick="closeCheatSheetModal()">
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 600px; width:90%;">
+      <div class="modal-head">
+        <h3>Service & Price Menu</h3>
+        <button class="close-btn" style="display: block" onclick="closeCheatSheetModal()">✕</button>
+      </div>
+      <div class="modal-body" style="padding:16px;">
+        <input type="text" id="cheatSheetSearch" class="form-input" placeholder="Search services..."
+          onkeyup="filterCheatSheet()"
+          style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--fg); margin-bottom: 16px;" />
+
+        <div id="cheatSheetBody"
+          style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding-right: 4px;">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAFF CHAT FAB & WINDOW -->
+  <button class="chat-fab ripple" onclick="toggleStaffChat()">💬</button>
+  <div class="chat-window hidden" id="staffChatWindow">
+    <div class="chat-header">
+      <div style="font-weight: 600">Reception Desk</div>
+      <button class="close-btn" style="display: block" onclick="toggleStaffChat()">
+        ✕
+      </button>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="chat-msg received">
+        Hi! Let us know if you need anything.
+      </div>
+    </div>
+    <div class="chat-quick-replies">
+      <button class="btn-outline btn-sm ripple" onclick="sendChatMessage('Running 10 mins late')">
+        10 mins late
+      </button>
+      <button class="btn-outline btn-sm ripple" onclick="sendChatMessage('Client arrived?')">
+        Client arrived?
+      </button>
+      <button class="btn-outline btn-sm ripple" onclick="sendChatMessage('Need help at station')">
+        Need help
+      </button>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Type message..."
+        onkeypress="if (event.key === 'Enter') sendChatMessage(this.value);" />
+      <button class="btn-primary ripple" onclick="sendChatMessage(document.getElementById('chatInput').value)">
+        ➤
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load new settings from sessionStorage if they exist
+      if(sessionStorage.getItem('setBufferTime')) document.getElementById('setBufferTime').value = sessionStorage.getItem('setBufferTime');
+      if(sessionStorage.getItem('setOnlineBooking')) document.getElementById('setOnlineBooking').checked = sessionStorage.getItem('setOnlineBooking') === 'true';
+      if(sessionStorage.getItem('setDoubleBooking')) document.getElementById('setDoubleBooking').checked = sessionStorage.getItem('setDoubleBooking') === 'true';
+      if(sessionStorage.getItem('setApptAlerts')) document.getElementById('setApptAlerts').checked = sessionStorage.getItem('setApptAlerts') === 'true';
+      if(sessionStorage.getItem('setArrivalAlerts')) document.getElementById('setArrivalAlerts').checked = sessionStorage.getItem('setArrivalAlerts') === 'true';
+      if(sessionStorage.getItem('setDailyBrief')) document.getElementById('setDailyBrief').checked = sessionStorage.getItem('setDailyBrief') === 'true';
+    });
+
+    let isEditMode = false;
+
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      const inputs = document.querySelectorAll('.form-input');
+      const checkboxes = document.querySelectorAll('#specialtyContainer input');
+      const toggleBtn = document.getElementById('editToggleBtn');
+      const actions = document.getElementById('formActions');
+      const roleText = document.getElementById('setRoleText');
+      const roleSelect = document.getElementById('setRole');
+
+      const editOnlyEls = document.querySelectorAll('.edit-only');
+
+      inputs.forEach(input => {
+        if (input.id === 'setRole' || input.id === 'setRoleText') return;
+
+        if (['setAadhar', 'setPan', 'setBankAcc', 'setBankIfsc'].includes(input.id) && input.dataset.saved === "true") {
+          input.readOnly = true;
+          input.classList.add('readonly-style');
+          return;
+        }
+
+        input.readOnly = !isEditMode;
+        input.classList.toggle('readonly-style', !isEditMode);
+      });
+
+      checkboxes.forEach(cb => cb.disabled = !isEditMode);
+      editOnlyEls.forEach(el => el.classList.toggle('hidden', !isEditMode));
+
+      document.getElementById('twoFactorToggle').disabled = !isEditMode;
+      document.getElementById('loginAlertsToggle').disabled = !isEditMode;
+
+      // New settings fields
+      document.getElementById('setBufferTime').disabled = !isEditMode;
+      document.getElementById('setBufferTime').classList.toggle('readonly-style', !isEditMode);
+      document.getElementById('setOnlineBooking').disabled = !isEditMode;
+      document.getElementById('setDoubleBooking').disabled = !isEditMode;
+      document.getElementById('setApptAlerts').disabled = !isEditMode;
+      document.getElementById('setArrivalAlerts').disabled = !isEditMode;
+      document.getElementById('setDailyBrief').disabled = !isEditMode;
+
+      roleText.classList.toggle('hidden', isEditMode);
+      roleSelect.classList.toggle('hidden', !isEditMode);
+
+      toggleBtn.classList.toggle('hidden', isEditMode);
+      actions.classList.toggle('hidden', !isEditMode);
+
+      if (isEditMode) {
+        document.getElementById('setPass').placeholder = "Leave blank to keep current";
+        document.getElementById('setConfirm').placeholder = "Confirm new password";
+      } else {
+        document.getElementById('setPass').placeholder = "********";
+        document.getElementById('setConfirm').placeholder = "********";
+      }
+    }
+
+    function saveSettings() {
+      const pass = document.getElementById('setPass').value;
+      const confirm = document.getElementById('setConfirm').value;
+      const aadhar = document.getElementById('setAadhar');
+      const pan = document.getElementById('setPan');
+      const bankAcc = document.getElementById('setBankAcc');
+      const bankIfsc = document.getElementById('setBankIfsc');
+
+      if (pass && pass !== confirm) {
+        showToast("Passwords do not match!", "warning", "⚠️");
+        return;
+      }
+
+      if (aadhar.value && !/^\d{12}$/.test(aadhar.value.replace(/\s/g, ''))) {
+        showToast("Please enter a valid 12-digit Aadhar number.", "warning", "⚠️");
+        return;
+      }
+
+      if (pan.value && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(pan.value.replace(/\s/g, ''))) {
+        showToast("Please enter a valid PAN number.", "warning", "⚠️");
+        return;
+      }
+
+      if (bankIfsc.value && !/^[A-Z]{4}0[A-Z0-9]{6}$/i.test(bankIfsc.value.replace(/\s/g, ''))) {
+        showToast("Please enter a valid IFSC code.", "warning", "⚠️");
+        return;
+      }
+
+      if (aadhar.value.trim() !== '') aadhar.dataset.saved = "true";
+      if (pan.value.trim() !== '') {
+        pan.value = pan.value.toUpperCase();
+        pan.dataset.saved = "true";
+      }
+      if (bankAcc.value.trim() !== '') bankAcc.dataset.saved = "true";
+      if (bankIfsc.value.trim() !== '') {
+        bankIfsc.value = bankIfsc.value.toUpperCase();
+        bankIfsc.dataset.saved = "true";
+      }
+
+      // Update the display role
+      document.getElementById('setRoleText').value = document.getElementById('setRole').value;
+
+      // Update data across UI and persist it
+      const newName = document.getElementById('setName').value;
+      const newPhone = document.getElementById('setPhone').value;
+      const newEmail = document.getElementById('setEmail').value;
+      const newRole = document.getElementById('setRole').value;
+
+      const checkedSpecs = Array.from(document.querySelectorAll('#specialtyContainer input:checked'))
+        .map(input => input.parentElement.textContent.trim());
+
+      sessionStorage.setItem('loggedInUser', newName);
+      sessionStorage.setItem('loggedInPhone', newPhone);
+      sessionStorage.setItem('loggedInEmail', newEmail);
+      sessionStorage.setItem('loggedInRole', newRole);
+      sessionStorage.setItem('loggedInSpecialties', JSON.stringify(checkedSpecs));
+
+      // Save new operational settings
+      sessionStorage.setItem('setBufferTime', document.getElementById('setBufferTime').value);
+      sessionStorage.setItem('setOnlineBooking', document.getElementById('setOnlineBooking').checked);
+      sessionStorage.setItem('setDoubleBooking', document.getElementById('setDoubleBooking').checked);
+      sessionStorage.setItem('setApptAlerts', document.getElementById('setApptAlerts').checked);
+      sessionStorage.setItem('setArrivalAlerts', document.getElementById('setArrivalAlerts').checked);
+      sessionStorage.setItem('setDailyBrief', document.getElementById('setDailyBrief').checked);
+
+      // Update DOM instantly across all elements
+      const initials = newName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+      ['headerName', 'sidebarName', 'settingsDisplayName'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = newName;
+      });
+      ['headerRole', 'settingsDisplayRole', 'sidebarRole'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = id === 'sidebarRole' ? newRole + ' · 9:00 AM' : newRole;
+      });
+      ['headerAvatar', 'sidebarAvatar', 'settingsAvatar'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = initials;
+      });
+
+      showToast("Settings saved successfully!", "success", "✨");
+      toggleEditMode(); // Switch back to view mode
+    }
+
+    function addSpecialty() {
+      const spec = prompt("Enter a new specialty:");
+      if (spec && spec.trim()) {
+        const container = document.getElementById('specialtyContainer');
+        const label = document.createElement('label');
+        label.className = 'checkbox-item';
+        label.innerHTML = `<input type="checkbox" checked /> ${spec}`;
+        container.appendChild(label);
+      }
+    }
+
+    function previewAvatar(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const av = document.getElementById('settingsAvatar');
+          av.style.backgroundImage = `url(${e.target.result})`;
+          av.style.backgroundSize = 'cover';
+          av.style.backgroundPosition = 'center';
+          av.textContent = ''; // hide initials
+
+          // Also update header avatar if needed
+          const headerAv = document.getElementById('headerAvatar');
+          headerAv.style.backgroundImage = `url(${e.target.result})`;
+          headerAv.style.backgroundSize = 'cover';
+          headerAv.style.backgroundPosition = 'center';
+          headerAv.textContent = '';
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+
+</html>

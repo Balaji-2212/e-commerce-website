@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Supplies - Staff Portal</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .status-badge.pending { background: var(--warning-bg); color: var(--warning); }
+    .status-badge.approved { background: var(--success-bg); color: var(--success); }
+    .status-badge.rejected { background: var(--danger-bg); color: var(--danger); }
+  </style>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1A6B8A">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+
+<body class="dashboard-body">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon" style="font-size: 24px; color: var(--primary); margin-right: 12px;">✨</div>
+      <div>
+        <div class="brand-name" style="line-height: 1.1;">Srijes<br><span style="font-size: 11px; font-weight: normal; color: var(--muted);">the beauty destination</span></div>
+      </div>
+      <button class="close-btn" id="closeSidebar" onclick="closeSidebar()">✕</button>
+    </div>
+
+    <div class="staff-badge">
+      <div class="staff-avatar-sm" id="sidebarAvatar">PS</div>
+      <div class="staff-badge-info">
+        <div class="staff-badge-name" id="sidebarName">Priya Sharma</div>
+        <div class="staff-badge-role" id="sidebarRole">Senior Stylist • 9AM–6PM</div>
+      </div>
+      <div class="status-dot active" id="sidebarDot"></div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item ripple" onclick="window.location.href='index.html'">
+        <span class="nav-icon">📊</span> My Dashboard
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='schedule.html'">
+        <span class="nav-icon">📅</span> My Schedule
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='attendance.html'">
+        <span class="nav-icon">⏱️</span> Attendance
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='clients.html'">
+        <span class="nav-icon">👥</span> Client Records
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='services.html'">
+        <span class="nav-icon">💇‍♀️</span> Services
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='analytics.html'">
+        <span class="nav-icon">📈</span> Analytics
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='request-supplies.html'">
+        <span class="nav-icon">📦</span> Request Supplies
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='staff-summary.html'">
+        <span class="nav-icon">📝</span> Staff Summary
+      </button>
+      <button class="nav-item ripple" onclick="window.location.href='settings.html'">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+    </nav>
+  </aside>
+
+  <!-- OVERLAY -->
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <button class="menu-btn" onclick="openSidebar()">☰</button>
+      <div class="topbar-info">
+        <div class="topbar-title">Request Supplies</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="status-badge active ripple" id="headerStatus" onclick="toggleBreak()" style="border: none; cursor: pointer" title="Click to start/end break">
+          🟢 On Duty
+        </button>
+        <button class="icon-btn" onclick="toggleDark()" title="Toggle theme">🌙</button>
+        <div class="header-profile">
+          <div class="staff-avatar-sm" id="headerAvatar">PS</div>
+          <div class="header-profile-info">
+            <div class="hp-name" id="headerName">Priya Sharma</div>
+            <div class="hp-role">Senior Stylist • <span style="color: #e74c3c; font-weight: 600; cursor: pointer;" onclick="logout()">Logout 🚪</span></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-heading">
+        <h1 class="greeting">Walk-in Services</h1>
+        <p class="shift-line">Browse the service catalog and instantly add walk-in clients to your queue.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; align-items: start;">
+        
+        <!-- SERVICE CATALOG -->
+        <div class="card" style="padding: 24px; min-height: 500px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="font-weight: 600; font-size: 16px;">Available Services</div>
+            <div class="indoor-search-wrapper" style="position: relative; width: 250px; display: flex;">
+              <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--muted);">🔍</span>
+              <input type="text" id="indoorSearch" placeholder="Search services..." onkeyup="filterIndoorServices()" style="width: 100%; padding: 8px 12px 8px 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--muted-bg); color: var(--text-main); font-family: inherit; font-size: 14px;">
+            </div>
+          </div>
+          
+          <div id="indoorCategoryTabs" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+            <!-- Rendered by app.js -->
+          </div>
+
+          <div id="stServicesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; overflow-y: auto; max-height: 600px; padding-right: 8px;">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+
+        <!-- WALKIN INTAKE FORM (Sticky) -->
+        <div class="card" style="padding: 24px; position: sticky; top: 24px;">
+          <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--text-main);">Intake Details</h2>
+          
+          <div id="walkinSelectedState" style="display: none;">
+            <div style="background: var(--primary-bg); padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--primary-light);">
+              <div style="font-weight: 600; color: var(--primary); font-size: 16px;" id="walkinServiceName">Service Name</div>
+              <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">
+                <span id="walkinServicePrice" style="font-weight: 600;">₹0</span> • <span id="walkinServiceDuration">0 mins</span>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Client Name *</label>
+              <input type="text" id="walkinClientName" class="form-input" placeholder="e.g. Rahul Kumar" autocomplete="off" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--fg);">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+              <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Phone Number</label>
+              <input type="tel" id="walkinClientPhone" class="form-input" placeholder="Optional" autocomplete="off" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--fg);">
+            </div>
+
+            <button class="btn-primary ripple" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 600;" onclick="submitPageWalkinAppointment()">
+              Create Appointment
+            </button>
+          </div>
+
+          <div id="walkinEmptyState" style="text-align: center; padding: 40px 20px; color: var(--muted);">
+            <div style="font-size: 32px; margin-bottom: 12px;">👈</div>
+            <div style="font-size: 14px;">Select a service from the catalog to begin.</div>
+          </div>
+
+        </div>
+      </div>
+      
+      <!-- Hidden div so app.js doesn't crash when rendering customers -->
+      <div id="stCustomersList" style="display: none;"></div>
+      <span id="stCustomersCount" style="display: none;">0</span>
+      <span id="stServicesCount" style="display: none;">0</span>
+
+    </main>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999;"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Initialize Walk-in context for app.js
+      window.currentServiceModalType = 'walkin';
+      window.currentIndoorCategoryTab = "All";
+      window.indoorServicesSearchQuery = "";
+      
+      // Wait for data.js and app.js to load the catalog
+      setTimeout(() => {
+        if (typeof renderIndoorModalContent === 'function') {
+          renderIndoorModalContent();
+        }
+      }, 500);
+    });
+
+    // Override the app.js openWalkinDetailsModal to populate our side form instead of a popup
+    window.openWalkinDetailsModal = function(serviceName, price, duration) {
+      window.pendingWalkinService = { serviceName, price, duration };
+      
+      document.getElementById('walkinServiceName').textContent = serviceName;
+      document.getElementById('walkinServicePrice').textContent = `₹${price.toLocaleString("en-IN")}`;
+      document.getElementById('walkinServiceDuration').textContent = `${duration} mins`;
+      
+      document.getElementById('walkinClientName').value = '';
+      document.getElementById('walkinClientPhone').value = '';
+      
+      document.getElementById('walkinEmptyState').style.display = 'none';
+      document.getElementById('walkinSelectedState').style.display = 'block';
+      
+      document.getElementById('walkinClientName').focus();
+    };
+
+    function submitPageWalkinAppointment() {
+      const clientName = document.getElementById('walkinClientName').value.trim();
+      const clientPhone = document.getElementById('walkinClientPhone').value.trim();
+      
+      if (!clientName) {
+        showToast("Please enter a Client Name", "warning", "⚠️");
+        return;
+      }
+      
+      const s = STAFF_DATA[currentStaff];
+      const newId = "w" + Date.now();
+      
+      // Create current time string
+      const now = new Date();
+      let hh = now.getHours();
+      let mm = now.getMinutes();
+      const ampm = hh >= 12 ? 'PM' : 'AM';
+      hh = hh % 12 || 12;
+      const timeStr = `${hh}:${mm.toString().padStart(2, '0')} ${ampm}`;
+      
+      s.appointments.push({
+        id: newId,
+        time: timeStr,
+        client: clientName,
+        service: window.pendingWalkinService.serviceName,
+        duration: window.pendingWalkinService.duration,
+        price: window.pendingWalkinService.price,
+        status: "in-progress",
+        phone: clientPhone || "N/A"
+      });
+      
+      // Sort by time
+      s.appointments.sort((a, b) => {
+        const getMins = t => {
+          if(!t) return 0;
+          const match = t.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+          if(!match) return 0;
+          let h = parseInt(match[1]);
+          const m = parseInt(match[2]);
+          const p = match[3];
+          if(p && p.toUpperCase() === 'PM' && h !== 12) h += 12;
+          if(p && p.toUpperCase() === 'AM' && h === 12) h = 0;
+          return h * 60 + m;
+        };
+        return getMins(a.time) - getMins(b.time);
+      });
+      
+      aptStates[newId] = "in-progress";
+      saveAptStates();
+      localStorage.setItem('STAFF_DATA_PERSIST', JSON.stringify(STAFF_DATA));
+      
+      showToast(`Walk-in ${clientName} added to your queue!`, "success", "✨");
+      
+      // Reset form
+      document.getElementById('walkinSelectedState').style.display = 'none';
+      document.getElementById('walkinEmptyState').style.display = 'block';
+      window.pendingWalkinService = null;
+    }
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

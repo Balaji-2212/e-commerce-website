@@ -1,0 +1,17 @@
+{
+  "name": "Medhika Staff Portal",
+  "short_name": "Staff",
+  "description": "Salon Staff Management App",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1A6B8A",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
